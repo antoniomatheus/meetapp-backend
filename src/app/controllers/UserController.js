@@ -66,7 +66,6 @@ class UserController {
       return res.status(400).json({ error: 'Password is incorrect' });
     }
 
-    console.log(user);
     const updatedUser = await user.update(req.body);
 
     return res.json({

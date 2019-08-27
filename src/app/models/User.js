@@ -9,6 +9,7 @@ class User extends Model {
         email: Sequelize.STRING,
         password: Sequelize.VIRTUAL,
         password_hash: Sequelize.STRING,
+        meetups_ids: Sequelize.ARRAY(Sequelize.INTEGER),
       },
       {
         sequelize,

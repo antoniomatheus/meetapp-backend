@@ -8,6 +8,7 @@ class Meetup extends Model {
         description: Sequelize.STRING,
         date_time: Sequelize.DATE,
         organizer_id: Sequelize.INTEGER,
+        participants_ids: Sequelize.ARRAY(Sequelize.INTEGER),
       },
       { sequelize }
     );

@@ -3,6 +3,9 @@ import Meetup from '../models/Meetup';
 import User from '../models/User';
 import Notification from '../schemas/Notification';
 
+import SignupMail from '../jobs/SignupMail';
+import Queue from '../../lib/Queue';
+
 class MeetupRegistrationController {
   async store(req, res) {
     const id = Number(req.params.id);
@@ -78,6 +81,11 @@ class MeetupRegistrationController {
     await Notification.create({
       content: `New attendee in ${meetup.title}: ${user.name}`,
       user: meetup.organizer_id,
+    });
+
+    await Queue.add(SignupMail.key, {
+      user,
+      meetup,
     });
 
     return res.json({

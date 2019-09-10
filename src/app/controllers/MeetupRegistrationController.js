@@ -3,6 +3,7 @@ import Meetup from '../models/Meetup';
 import User from '../models/User';
 import Notification from '../schemas/Notification';
 
+import SignoutMail from '../jobs/SignoutMail';
 import SignupMail from '../jobs/SignupMail';
 import Queue from '../../lib/Queue';
 
@@ -70,8 +71,8 @@ class MeetupRegistrationController {
       meetup.participants_ids = [];
     }
 
-    user.meetups_ids.push(id);
-    meetup.participants_ids.push(user.id);
+    user.meetups_ids = [...meetups_ids, id];
+    meetup.participants_ids = [...meetup.participants_ids, user.id];
     await user.update({ meetups_ids: user.meetups_ids });
     await meetup.update({ participants_ids: meetup.participants_ids });
 
@@ -94,7 +95,57 @@ class MeetupRegistrationController {
   }
 
   async delete(req, res) {
-    return res.json({});
+    const id = Number(req.params.id);
+
+    const user = await User.findByPk(req.userId);
+
+    const { meetups_ids } = user;
+
+    const meetupIndex = meetups_ids.findIndex(meetupId => meetupId === id);
+
+    if (meetupIndex < 0) {
+      return res
+        .status(401)
+        .json({ error: 'You are not signed up in this meetup. ' });
+    }
+
+    const meetup = await Meetup.findByPk(id);
+
+    if (!meetup) {
+      return res.status(400).json({ error: 'The meetup does not exist.' });
+    }
+
+    const { date_time, participants_ids } = meetup;
+
+    if (isBefore(date_time, new Date())) {
+      return res.status(401).json({ error: 'The meetup already occurred.' });
+    }
+
+    const participantId = participants_ids.findIndex(
+      userId => userId === req.userId
+    );
+
+    meetups_ids.splice(meetupIndex, 1);
+    await user.update({ meetups_ids });
+    participants_ids.splice(participantId, 1);
+    await meetup.update({ participants_ids });
+
+    /**
+     * Notify the organizer and the user
+     */
+    await Notification.create({
+      content: `An attendee from ${meetup.title} signed out.`,
+      user: meetup.organizer_id,
+    });
+
+    await Queue.add(SignoutMail.key, {
+      user,
+      meetup,
+    });
+
+    return res.json({
+      message: `You have successfully signed out from ${meetup.title} meetup.`,
+    });
   }
 }
 

@@ -21,6 +21,10 @@ class Meetup extends Model {
       foreignKey: 'image_id',
       as: 'image',
     });
+    this.belongsTo(models.User, {
+      foreignKey: 'organizer_id',
+      as: 'organizer',
+    });
   }
 }
 

@@ -154,15 +154,20 @@ class MeetupUserInteractionController {
 
     const { meetups_ids } = user;
 
+    if (meetups_ids.length === 0) {
+      return res.json([]);
+    }
+
     const meetups = await Meetup.findAll({
       where: {
         id: {
-          [Op.or]: [...meetups_ids],
+          [Op.or]: meetups_ids,
         },
         date_time: {
           [Op.gte]: new Date(),
         },
       },
+      order: ['date_time'],
     });
 
     return res.json(meetups);

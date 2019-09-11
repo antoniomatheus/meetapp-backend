@@ -5,7 +5,7 @@ import UserController from './app/controllers/UserController';
 import SessionController from './app/controllers/SessionController';
 import UploadController from './app/controllers/UploadController';
 import MeetupController from './app/controllers/MeetupController';
-import MeetupUserInteractionController from './app/controllers/MeetupRegistrationController';
+import MeetupUserInteractionController from './app/controllers/MeetupUserInteractionController';
 import authMiddleware from './app/middlewares/auth';
 import multerConfig from './config/multer';
 

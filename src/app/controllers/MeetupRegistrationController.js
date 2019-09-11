@@ -1,4 +1,5 @@
 import { isBefore, differenceInMinutes } from 'date-fns';
+import { Op } from 'sequelize';
 import Meetup from '../models/Meetup';
 import User from '../models/User';
 import Notification from '../schemas/Notification';
@@ -7,7 +8,7 @@ import SignoutMail from '../jobs/SignoutMail';
 import SignupMail from '../jobs/SignupMail';
 import Queue from '../../lib/Queue';
 
-class MeetupRegistrationController {
+class MeetupUserInteractionController {
   async store(req, res) {
     const id = Number(req.params.id);
 
@@ -147,6 +148,25 @@ class MeetupRegistrationController {
       message: `You have successfully signed out from ${meetup.title} meetup.`,
     });
   }
+
+  async index(req, res) {
+    const user = await User.findByPk(req.userId);
+
+    const { meetups_ids } = user;
+
+    const meetups = await Meetup.findAll({
+      where: {
+        id: {
+          [Op.or]: [...meetups_ids],
+        },
+        date_time: {
+          [Op.gte]: new Date(),
+        },
+      },
+    });
+
+    return res.json(meetups);
+  }
 }
 
-export default new MeetupRegistrationController();
+export default new MeetupUserInteractionController();

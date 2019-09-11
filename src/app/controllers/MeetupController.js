@@ -1,5 +1,4 @@
 import * as Yup from 'yup';
-import { Op } from 'sequelize';
 import { parseISO, isBefore } from 'date-fns';
 import Meetup from '../models/Meetup';
 import File from '../models/File';
@@ -53,9 +52,6 @@ class MeetupController {
     const meetups = await Meetup.findAll({
       where: {
         organizer_id: req.userId,
-        date_time: {
-          [Op.gt]: new Date(),
-        },
       },
     });
 

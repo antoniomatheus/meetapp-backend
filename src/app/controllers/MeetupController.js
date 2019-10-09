@@ -74,7 +74,7 @@ class MeetupController {
           attributes: ['name'],
           include: {
             model: File,
-            as: 'profile_image',
+            as: 'avatar',
             attributes: ['name', 'url'],
           },
         },
@@ -154,6 +154,13 @@ class MeetupController {
 
     if (!(await schema.isValid(req.body))) {
       return res.status(400).json({ error: 'Validation failed.' });
+    }
+
+    const { date_time } = req.body;
+    if (isBefore(parseISO(date_time), new Date())) {
+      return res
+        .status(400)
+        .json({ error: "You can't change to a past date." });
     }
 
     const updatedMeetup = await meetup.update(req.body);

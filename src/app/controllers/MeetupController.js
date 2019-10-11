@@ -68,22 +68,38 @@ class MeetupController {
         order: ['date_time'],
         limit: 10,
         offset: (page - 1) * 10,
-        include: {
-          model: User,
-          as: 'organizer',
-          attributes: ['name'],
-          include: {
-            model: File,
-            as: 'avatar',
-            attributes: ['name', 'url'],
+        include: [
+          {
+            model: User,
+            as: 'organizer',
+            attributes: ['name'],
+            include: [
+              {
+                model: File,
+                as: 'avatar',
+                attributes: ['url', 'path'],
+              },
+            ],
           },
-        },
+          {
+            model: File,
+            as: 'image',
+            attributes: ['url', 'path'],
+          },
+        ],
       });
     } else {
       meetups = await Meetup.findAll({
         order: ['date_time'],
         limit: 10,
         offset: (page - 1) * 10,
+        include: [
+          {
+            model: File,
+            as: 'image',
+            attributes: ['name', 'url'],
+          },
+        ],
       });
     }
 

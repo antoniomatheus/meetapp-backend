@@ -1,5 +1,6 @@
 import * as Yup from 'yup';
 import User from '../models/User';
+import File from '../models/File';
 
 class UserController {
   async store(req, res) {
@@ -46,13 +47,14 @@ class UserController {
         .when('password', (password, field) =>
           password ? field.required().oneOf([Yup.ref('password')]) : field
         ),
+      avatar_id: Yup.number(),
     });
 
     if (!(await schema.isValid(req.body))) {
       return res.status(400).json({ error: 'Validation failed.' });
     }
 
-    const { email, oldPassword } = req.body;
+    const { email, oldPassword, avatar_id } = req.body;
 
     const user = await User.findByPk(req.userId);
 
@@ -66,12 +68,29 @@ class UserController {
       return res.status(400).json({ error: 'Password is incorrect' });
     }
 
-    const updatedUser = await user.update(req.body);
+    if (avatar_id && !(await File.findOne({ where: { id: avatar_id } }))) {
+      return res
+        .status(400)
+        .json({ error: "The file you're trying to use doesn't exist." });
+    }
+
+    await user.update(req.body);
+
+    const { id, name, avatar } = User.findByPk(req.userId, {
+      include: [
+        {
+          model: File,
+          as: 'avatar',
+          attributes: ['id', 'path', 'url'],
+        },
+      ],
+    });
 
     return res.json({
-      id: updatedUser.id,
-      name: updatedUser.name,
-      email: updatedUser.email,
+      id,
+      name,
+      email,
+      avatar,
     });
   }
 }

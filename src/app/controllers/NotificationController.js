@@ -4,7 +4,9 @@ class NotificationController {
   async index(req, res) {
     const { userId } = req;
 
-    const response = await Notification.find({ user: userId });
+    const response = await Notification.find({ user: userId }).sort({
+      createdAt: 'desc',
+    });
 
     return res.json(response);
   }

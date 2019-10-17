@@ -8,7 +8,7 @@ import SignoutMail from '../jobs/SignoutMail';
 import SignupMail from '../jobs/SignupMail';
 import Queue from '../../lib/Queue';
 
-class MeetupUserInteractionController {
+class MeetupRegistrationController {
   async store(req, res) {
     const id = Number(req.params.id);
 
@@ -174,4 +174,4 @@ class MeetupUserInteractionController {
   }
 }
 
-export default new MeetupUserInteractionController();
+export default new MeetupRegistrationController();

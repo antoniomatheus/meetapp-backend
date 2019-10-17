@@ -55,7 +55,7 @@ class UserController {
     }
 
     const { email, oldPassword, avatar_id } = req.body;
-
+    console.log(req.userId);
     const user = await User.findByPk(req.userId);
 
     if (email && email !== user.email) {
@@ -76,7 +76,7 @@ class UserController {
 
     await user.update(req.body);
 
-    const { id, name, avatar } = User.findByPk(req.userId, {
+    const { id, name, avatar } = await User.findByPk(req.userId, {
       include: [
         {
           model: File,

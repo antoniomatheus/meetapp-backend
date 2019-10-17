@@ -19,6 +19,8 @@ routes.post('/users', UserController.store);
 
 routes.use(authMiddleware);
 
+routes.put('/users', UserController.update);
+
 routes.post('/files', upload.single('file'), UploadController.store);
 
 routes.post('/meetups', MeetupController.store);
@@ -33,7 +35,5 @@ routes.get('/meetups/nextmeetups', MeetupRegistrationController.index);
 
 routes.get('/notifications', NotificationController.index);
 routes.put('/notifications/:id', NotificationController.update);
-
-routes.put('/users', UserController.update);
 
 export default routes;

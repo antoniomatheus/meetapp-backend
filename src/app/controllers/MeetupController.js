@@ -11,6 +11,7 @@ class MeetupController {
       title: Yup.string().required(),
       description: Yup.string().required(),
       date_time: Yup.date().required(),
+      location: Yup.string().required(),
       image_id: Yup.number(),
     });
 
@@ -18,7 +19,7 @@ class MeetupController {
       return res.status(400).json({ error: 'Validation failed.' });
     }
 
-    const { title, description, date_time, image_id } = req.body;
+    const { title, description, date_time, image_id, location } = req.body;
 
     const date = parseISO(req.body.date_time);
     if (isBefore(date, new Date())) {
@@ -44,6 +45,7 @@ class MeetupController {
       description,
       date_time,
       organizer_id: req.userId,
+      location,
       image_id,
     });
 
@@ -97,7 +99,12 @@ class MeetupController {
           {
             model: File,
             as: 'image',
-            attributes: ['name', 'url'],
+            attributes: ['name', 'path', 'url'],
+          },
+          {
+            model: User,
+            as: 'organizer',
+            attributes: ['name'],
           },
         ],
       });
@@ -165,6 +172,7 @@ class MeetupController {
       title: Yup.string(),
       description: Yup.string(),
       date_time: Yup.date(),
+      location: Yup.string(),
       image_id: Yup.number(),
     });
 

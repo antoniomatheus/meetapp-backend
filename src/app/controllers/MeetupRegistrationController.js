@@ -2,6 +2,7 @@ import { isBefore, differenceInMinutes } from 'date-fns';
 import { Op } from 'sequelize';
 import Meetup from '../models/Meetup';
 import User from '../models/User';
+import File from '../models/File';
 import Notification from '../schemas/Notification';
 
 import SignoutMail from '../jobs/SignoutMail';
@@ -168,6 +169,18 @@ class MeetupRegistrationController {
         },
       },
       order: ['date_time'],
+      include: [
+        {
+          model: File,
+          as: 'image',
+          attributes: ['name', 'path', 'url'],
+        },
+        {
+          model: User,
+          as: 'organizer',
+          attributes: ['name'],
+        },
+      ],
     });
 
     return res.json(meetups);

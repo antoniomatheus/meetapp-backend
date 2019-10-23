@@ -66,6 +66,9 @@ class MeetupController {
               endOfDay(parseISO(date)),
             ],
           },
+          organizer_id: {
+            [Op.not]: req.userId,
+          },
         },
         order: ['date_time'],
         limit: 10,
@@ -92,6 +95,11 @@ class MeetupController {
       });
     } else {
       meetups = await Meetup.findAll({
+        where: {
+          organizer_id: {
+            [Op.not]: req.userId,
+          },
+        },
         order: ['date_time'],
         limit: 10,
         offset: (page - 1) * 10,

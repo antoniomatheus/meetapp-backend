@@ -5,7 +5,7 @@ class Meetup extends Model {
     super.init(
       {
         title: Sequelize.STRING,
-        description: Sequelize.STRING,
+        description: Sequelize.TEXT,
         date_time: Sequelize.DATE,
         organizer_id: Sequelize.INTEGER,
         location: Sequelize.STRING,
